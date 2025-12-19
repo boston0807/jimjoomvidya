@@ -4,27 +4,35 @@
   <meta charset="UTF-8" />
   <title>Personality Quiz</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
     * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
     body {
       margin: 0; height: 100vh;
       display: flex; justify-content: center; align-items: center;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #ee930a, #f1a310);
       color: #fff;
     }
     .card {
       width: 90%; max-width: 420px;
-      background: #1f2937;
+      background: #f0921749;
       border-radius: 16px;
       padding: 24px;
       box-shadow: 0 20px 40px rgba(0,0,0,.3);
       animation: fadeIn .6s ease;
     }
-    h1 { text-align: center; margin-bottom: 16px; }
+    h1 { 
+      text-align: center; 
+      margin-bottom: 16px;
+      font-family: "Bai Jamjuree", sans-serif;
+    }
+
     .question {
-      font-size: 1.1rem;
+      font-size: 18px;
       margin-bottom: 20px;
       min-height: 48px;
       transition: opacity .4s, transform .4s;
+      font-family: "Bai Jamjuree", sans-serif;
+      text-align: center;
     }
     .answers button {
       width: 100%;
@@ -32,26 +40,29 @@
       margin-bottom: 10px;
       border: none;
       border-radius: 10px;
-      background: #374151;
+      background: #1a0f0131;
       color: #fff;
       font-size: 1rem;
       cursor: pointer;
       transition: background .3s, transform .2s;
+      font-size: 16px;
+      font-family: "Bai Jamjuree", sans-serif;
     }
     .answers button:hover {
-      background: #4f46e5;
+      background: #f06f05;
       transform: translateY(-2px);
     }
     .progress {
       height: 6px;
-      background: #374151;
+      background: #e9d41d;
       border-radius: 4px;
       overflow: hidden;
       margin-top: 16px;
+  
     }
     .progress-bar {
       height: 100%; width: 0%;
-      background: #22c55e;
+      background: #cf540d;
       transition: width .4s ease;
     }
     .result {
@@ -66,9 +77,16 @@
       0% { transform: scale(.8); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
+    .logo img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 150px;
+    }
   </style>
 </head>
 <body>
+  <div class = "logo" id = "logo"><img src="nobg.png" alt="Logo"></div>
   <div class="card">
     <h1>แบบทดสอบลักษณะนิสัย</h1>
     <div id="quiz">
@@ -81,15 +99,19 @@
   <script>
     // คำถาม (ยังไม่คำนวณคะแนนจริง)
     const questions = [
-      'คุณชอบทำงานคนเดียวหรือทำงานเป็นทีม?',
-      'เวลาว่างคุณมักจะเลือกทำอะไร?',
-      'คุณตัดสินใจจากเหตุผลหรือความรู้สึกมากกว่า?'
+      'คุณชอบทำงานคนเดียวหรือทำงานเป็นทีม ?',
+      'เวลาว่างคุณมักจะเลือกทำอะไร ?',
+      'คุณตัดสินใจจากเหตุผลหรือความรู้สึกมากกว่า ?',
+      'คุณชอบเพศไหน',
+      'เวลาคุณว่างคุณทำอะไร'
     ];
 
     const choices = [
       ['คนเดียว', 'เป็นทีม'],
       ['พักผ่อนเงียบ ๆ', 'ออกไปพบผู้คน'],
-      ['เหตุผล', 'ความรู้สึก']
+      ['เหตุผล', 'ความรู้สึก'],
+      ['ชาย','หญิง'],
+      ['เล่นเกม','เล่นเก','ติ้ว']
     ];
 
     let index = 0;
@@ -131,9 +153,9 @@
     function showResult() {
       document.getElementById('quiz').innerHTML = `
         <div class="result">
-          <h2>ผลลัพธ์</h2>
+          <h2>ผลลัพธ์คุณเป็นคนที่...</h2>
           <p>คุณเป็นคนที่มีลักษณะ <strong>เปิดรับสิ่งใหม่ ๆ</strong></p>
-          <p>(ตัวอย่างผลลัพธ์ — logic คำนวณจะเพิ่มภายหลัง)</p>
+          <p>เหมือนหมูเด้ง</p>
         </div>
       `;
       bar.style.width = '100%';
