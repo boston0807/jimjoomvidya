@@ -13,13 +13,17 @@
       color: #fff;
     }
     .card {
-      width: 90%; max-width: 420px;
-      background: #f0921749;
-      border-radius: 16px;
+      width: 90%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
       padding: 24px;
       box-shadow: 0 20px 40px rgba(0,0,0,.3);
       animation: fadeIn .6s ease;
     }
+
     h1 { 
       text-align: center; 
       margin-bottom: 16px;
@@ -69,6 +73,42 @@
       text-align: center;
       animation: pop .6s ease;
     }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+    .story-progress { display: none; }
+    .quiz-progress { display: none; }
+
+    .card.story {
+      max-width: 680px;
+      padding: 40px;
+    }
+
+    .card.story .question {
+      font-size: 28px;
+      line-height: 1.7;
+    }
+
+    .card.quiz {
+      max-width: 420px;
+      padding: 24px;
+    }
+
+    .card.quiz .question {
+      font-size: 18px;
+    }
+    .nav button {
+      flex: 1;
+      margin: 0 4px;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(0,0,0,0.3);
+      color: white;
+      cursor: pointer;
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -92,76 +132,154 @@
     <div id="quiz">
       <div class="question" id="question"></div>
       <div class="answers" id="answers"></div>
-      <div class="progress"><div class="progress-bar" id="bar"></div></div>
-    </div>
-  </div>
+      <div class="nav">
+      <button id="prev">ย้อนกลับ</button>
+      <button id="next">ถัดไป</button>
+      </div>
+      <div class="progress story-progress">
+        <div class="progress-bar" id="storyBar"></div>
+      </div>
+      <div class="progress quiz-progress">
+        <div class="progress-bar" id="quizBar"></div>
+      </div>
+        </div>
+      </div>
 
   <script>
-    // คำถาม (ยังไม่คำนวณคะแนนจริง)
     const questions = [
-      'คุณชอบทำงานคนเดียวหรือทำงานเป็นทีม ?',
-      'เวลาว่างคุณมักจะเลือกทำอะไร ?',
-      'คุณตัดสินใจจากเหตุผลหรือความรู้สึกมากกว่า ?',
-      'คุณชอบเพศไหน',
-      'เวลาคุณว่างคุณทำอะไร'
+      'วินาทีแรกที่เดินเข้าสวน สิ่งที่ดึงดูดสายตาคุณที่สุดคือ?',
+      'เมื่อเจ้าของบ้านยื่น “เครื่องดื่มต้อนรับ” มาให้คุณ คุณจะ…?',
+      'ระหว่างรออาหาร คุณเห็นพนักงานคนหนึ่งดูสับสนกับออเดอร์ คุณจะ…?',
+      'อาหารจานหลักมาเสิร์ฟแล้ว คุณเริ่มทานยังไง?',
+      'มีแขกกลุ่มใหญ่เข้ามาแล้วหาโต๊ะไม่ได้ คุณจะ…?',
+      'เจ้าของสวนมาถามความเห็น คุณจะตอบว่า…?',
+      'ก่อนกลับ คุณเห็นกล่องของที่ระลึก คุณจะเลือก…?'
     ];
 
     const choices = [
-      ['คนเดียว', 'เป็นทีม'],
-      ['พักผ่อนเงียบ ๆ', 'ออกไปพบผู้คน'],
-      ['เหตุผล', 'ความรู้สึก'],
-      ['ชาย','หญิง'],
-      ['เล่นเกม','เล่นเก','ติ้ว']
+      ['การตกแต่งโดยรวมกับโทนสีของสวน ที่ดูมีสไตล์และไม่เหมือนที่เคยเห็น', 'เจ้าของบ้านที่ยิ้มทักทายและต้อนรับอย่างเป็นกันเองตั้งแต่หน้าทางเข้า', 'กลิ่นอาหารหอมๆ กับเสียงเพลงสนุกที่ทำให้บรรยากาศคึกคัก', 'การจัดโต๊ะและพื้นที่ที่ดูเป็นระเบียบ เข้าใจง่าย น่านั่ง', 'มุมเงียบๆ ในสวนที่ดูสงบ ลมพัดสบาย เหมาะกับการนั่งพัก'],
+      ['รับมาแล้วยิ้มขอบคุณ พร้อมถามว่า “มีอะไรให้ช่วยไหมครับ”', 'รับมาดูสีเครื่องดื่มก่อนแล้วดื่มทันทีด้วยความสดชื่น', 'ขอบคุณก่อน แล้วถามเบาๆ ว่าใช้อะไรเป็นส่วนผสมบ้าง', ' รับมาอย่างสุภาพ ขอบคุณ แล้วเดินไปหาที่นั่งที่รู้สึกสบายใจ', 'ชื่นชมสีของเครื่องดื่ม พร้อมแอบคิดว่าถ้าเติมอะไรนิดหน่อยน่าจะสวยขึ้นอีก'],
+      ['เข้าไปช่วยดูรายการและจัดลำดับให้ง่ายขึ้น เพื่อไม่ให้เกิดความวุ่นวาย', 'เดินเข้าไปให้กำลังใจ บอกว่าไม่ต้องรีบ ค่อยๆ ทำได้','พูดส่งเสียงไปให้กำลังใจแบบเป็นกันเองว่า “ไม่เป็นไรครับ รอได้”','มองดูอยู่ห่างๆ ถ้าเขาดูต้องการความช่วยเหลือ ค่อยเข้าไปช่วยเงียบๆ','สังเกตภาพรวม แล้วคิดในใจว่าถ้าจัดพื้นที่หรือขั้นตอนใหม่ น่าจะทำงานง่ายขึ้น'],
+      ['เริ่มทานทันทีด้วยความเอร็ดอร่อย','ชวนคนรอบโต๊ะให้ลองชิมไปด้วยกัน','ค่อยๆ ทานตามลำดับ เพื่อให้ได้รสชาติครบถ้วน' ,'ถ่ายรูปก่อนทาน เลือกมุมที่รู้สึกว่าสวยที่สุด', 'ทานช้าๆ อย่างใจเย็น พร้อมชื่นชมรสชาติในใจ'],
+      ['เสนอให้เขานั่งที่โต๊ะคุณ แล้วคุณย้ายไปหาที่นั่งเงียบๆ แทน',' เข้าไปช่วยเจ้าของบ้านจัดโต๊ะเพิ่มให้แขกใหม่','เสนอไอเดียจัดโต๊ะใหม่ให้รองรับคนได้มากขึ้นและยังดูดี', 'นั่งทานต่อในโต๊ะที่จองไว้ตามปกติ', 'ชวนแขกกลุ่มนั้นมานั่งรวมโต๊ะเดียวกัน บรรยากาศจะได้คึกคักขึ้น'],
+      ['ชมก่อน แล้วเสนอไอเดียเล็กๆ ที่คิดว่าน่าจะทำให้ดูดีขึ้น', 'ให้ความเห็นตรงไปตรงมา แยกเป็นข้อดีและข้อที่ปรับได้', 'ชมทั้งอาหารและบรรยากาศ พร้อมขอบคุณเจ้าของบ้าน', 'บอกสั้นๆ ว่ารู้สึกดีและสบายใจที่ได้มา', 'ชมด้วยน้ำเสียงตื่นเต้น บอกว่าประทับใจและอยากกลับมาอีก'],
+      ['ขนมหลายชิ้นไว้เอาไปแบ่งให้คนอื่น', 'สมุดหรือของใช้ที่ดูแข็งแรงและใช้งานได้จริง', 'ของตกแต่งที่ดีไซน์สวยและมีเอกลักษณ์', 'ขนมสีสันสดใสที่ถือแล้วรู้สึกสนุก', 'ต้นไม้หรือของเล็กๆ ที่ดูแลได้เงียบๆ ที่บ้าน']
     ];
 
-    let index = 0;
-    let score = 0; // placeholder
+    const storyboards = [
+      `ค่ำคืนนี้ อากาศเย็นพอดี ลมพัดเอื่อยๆ ผ่านแนวต้นไม้ที่ถูกตกแต่งด้วยไฟระย้าดวงเล็กนับไม่ถ้วน`,
+      `แสงสีทองทอดยาวไปตามทางเดินกรวด เสียงหัวเราะแผ่วเบาลอยมากับกลิ่นอาหาร`,
+      `ที่นี่ไม่ใช่ร้านอาหาร แต่เป็น “สวนอาหารหรรษา”`,
+      `คุณก้าวเท้าเข้าสวน และโดยไม่รู้ตัว... ตัวตนของคุณกำลังถูกสะท้อนออกมา`,
+      `ในสวนอาหารแห่งนี้ คุณคือใครกันแน่?`
+    ];
+
+    let stepIndex = 0; // story + question
+    let questionIndex = 0;
+    let score = [0,0,0,0,0]; 
 
     const qEl = document.getElementById('question');
     const aEl = document.getElementById('answers');
     const bar = document.getElementById('bar');
+    const card = document.querySelector('.card');
+    const title = document.querySelector('h1');
+    const storyBar = document.getElementById('storyBar');
+    const quizBar = document.getElementById('quizBar');
 
-    function showQuestion() {
-      qEl.style.opacity = 0;
-      qEl.style.transform = 'translateX(-10px)';
 
-      setTimeout(() => {
-        qEl.textContent = questions[index];
-        aEl.innerHTML = '';
-        choices[index].forEach(text => {
-          const btn = document.createElement('button');
-          btn.textContent = text;
-          btn.onclick = next;
-          aEl.appendChild(btn);
-        });
-        qEl.style.opacity = 1;
-        qEl.style.transform = 'translateX(0)';
-        bar.style.width = ((index) / questions.length) * 100 + '%';
-      }, 300);
+
+    function showStory() {
+      title.textContent = 'เนื้อเรื่องย่อ';
+
+      card.classList.add('story');
+      card.classList.remove('quiz');
+
+      document.querySelector('.story-progress').style.display = 'block';
+      document.querySelector('.quiz-progress').style.display = 'none';
+
+      qEl.textContent = storyboards[stepIndex];
+      aEl.innerHTML = '';
+
+      storyBar.style.width =
+        ((stepIndex + 1) / storyboards.length) * 100 + '%';
     }
 
-    function next() {
-      score++; // ยังไม่คิดจริง
-      index++;
-      if (index < questions.length) {
+
+
+    function showQuestion() {
+      title.textContent = 'แบบทดสอบลักษณะนิสัย';
+
+      card.classList.add('quiz');
+      card.classList.remove('story');
+
+      document.querySelector('.story-progress').style.display = 'none';
+      document.querySelector('.quiz-progress').style.display = 'block';
+
+      qEl.textContent = questions[questionIndex];
+      aEl.innerHTML = '';
+
+      quizBar.style.width =
+        (questionIndex / questions.length) * 100 + '%';
+
+      choices[questionIndex].forEach((text, choiceIndex) => {
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        btn.onclick = () => {
+          score[choiceIndex]++;
+          nextStep();
+        };
+        aEl.appendChild(btn);
+      });
+    }
+
+
+
+    function nextStep() {
+      stepIndex++;
+
+      if (stepIndex < storyboards.length) {
+        showStory();
+      } else if (questionIndex < questions.length) {
         showQuestion();
+        questionIndex++;
       } else {
         showResult();
       }
     }
 
+    function prevStep() {
+      if (stepIndex > 0) {
+        stepIndex--;
+        showStory();
+      }
+    }
+
+
     function showResult() {
+      const maxScore = Math.max(...score);
+      const typeindex = score.indexOf(maxScore);
+
+      const personalities = [
+    'นักวางแผนเป็นระบบ',
+    'คนอบอุ่นเป็นมิตร',
+    'นักวิเคราะห์',
+    'สายสร้างสรรค์',
+    'คนสงบลึกซึ้ง'
+  ];
+
       document.getElementById('quiz').innerHTML = `
         <div class="result">
           <h2>ผลลัพธ์คุณเป็นคนที่...</h2>
-          <p>คุณเป็นคนที่มีลักษณะ <strong>เปิดรับสิ่งใหม่ ๆ</strong></p>
+          <p>คุณเป็นคนที่มีลักษณะ ${personalities[typeindex]}</strong></p>
           <p>เหมือนหมูเด้ง</p>
         </div>
       `;
       bar.style.width = '100%';
     }
 
-    showQuestion();
+    document.getElementById('next').onclick = nextStep;
+    document.getElementById('prev').onclick = prevStep;
+    showStory();
   </script>
 </body>
 </html>
